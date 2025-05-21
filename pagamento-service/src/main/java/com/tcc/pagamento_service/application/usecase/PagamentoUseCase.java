@@ -3,7 +3,6 @@ package com.tcc.pagamento_service.application.usecase;
 import com.tcc.pagamento_service.application.dto.PagamentoDTO;
 import com.tcc.pagamento_service.domain.model.Pagamento;
 import com.tcc.pagamento_service.domain.repository.PagamentoRepository;
-import com.tcc.pagamento_service.infra.config.PedidoClient;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,19 +10,12 @@ import java.util.List;
 @Component
 public class PagamentoUseCase {
     private final PagamentoRepository pagamentoRepository;
-    private final PedidoClient pedidoClient;
 
-    public PagamentoUseCase(PagamentoRepository pagamentoRepository, PedidoClient pedidoClient) {
+    public PagamentoUseCase(PagamentoRepository pagamentoRepository) {
         this.pagamentoRepository = pagamentoRepository;
-        this.pedidoClient = pedidoClient;
     }
 
     public Pagamento criarPagamento(PagamentoDTO dto) {
-        // Valida se o pedido existe
-        if (!pedidoClient.existePedido(dto.getPedidoId())) {
-            throw new IllegalArgumentException("Pedido não encontrado!");
-        }
-
         // Valida método de pagamento
         if (dto.getMetodoPagamento() == null) {
             throw new IllegalArgumentException("Método de pagamento é obrigatório");

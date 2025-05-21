@@ -1,24 +1,22 @@
 spring:
   rabbitmq:
-    host: localhost
+    host: rabbitmq  # Nome do serviço no docker-compose
     port: 5672
     username: guest
     password: guest
     template:
-      exchange: pagamento.exchange  # Adicione esta linha para configurar a exchange padrão
+      exchange: pagamento.exchange
+    listener:
+      simple:
+        retry:
+          enabled: true  # Habilita retry automático para falhas
+          max-attempts: 3
+          initial-interval: 2000ms
 
 app:
   rabbitmq:
     queues:
-      criado: pagamento.criado.queue  # Nome da fila como variável de configuração
-      deletado: pagamento.deletado.queue
-
-pedido-service:
-  base-url: http://localhost:8084/pedido
-
-logging:
-  level:
-    org.springframework.cloud.openfeign: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    com.tcc.pedido_service: DEBUG
+      pedido-criado: pagamento.criado.queue  # Fila para pedidos criados
+      pedido-processado: pagamento.processado.queue  # Fila para respostas
+    routing-keys:
+      pedido-criado: pedido.criado  # Routing key para eventos de pedido
